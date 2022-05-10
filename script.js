@@ -12,6 +12,12 @@
 (function () {
   "use strict";
   function f() {
+    // 避免鼠标移出页面视频暂停
+    window.addEventListener(
+      "mouseout",
+      (event) => event.stopPropagation(),
+      true
+    );
     const frame_1 = document.querySelector(".course_main iframe");
     const frame_2 = frame_1.contentWindow.document.querySelector("iframe");
     // 单标题无视频页面直接跳转下一章
