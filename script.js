@@ -23,10 +23,6 @@
     // 单标题无视频页面直接跳转下一章
     if (!frame_2) {
       let btn = document.querySelector("#right0");
-      if (!btn) {
-        // 习题页面直接跳转下一章
-        btn = document.querySelector("#right1");
-      }
       btn.click();
       window.setTimeout(() => {
         f();
@@ -35,6 +31,13 @@
       const btn = document.querySelector("#right1"); // 下一章按钮
       if (!btn) return; // 不存在下一章即全部播放完成
       const video = frame_2.contentWindow.document.querySelector("video");
+      if (!video) {
+        btn.click();
+        window.setTimeout(() => {
+        f();
+        }, 10000);
+        return;
+      }
       video.muted = true; // 设置静音播放
       video.playbackRate = 2; // 设置2倍播放速度
       video.play();
