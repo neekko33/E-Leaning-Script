@@ -22,7 +22,11 @@
     const frame_2 = frame_1.contentWindow.document.querySelector("iframe");
     // 单标题无视频页面直接跳转下一章
     if (!frame_2) {
-      const btn = document.querySelector("#right0");
+      let btn = document.querySelector("#right0");
+      if (!btn) {
+        // 习题页面直接跳转下一章
+        btn = document.querySelector("#right1");
+      }
       btn.click();
       window.setTimeout(() => {
         f();
