@@ -10,51 +10,54 @@
 // ==/UserScript==
 
 (function () {
-  "use strict";
-  function f() {
-    // 避免鼠标移出页面视频暂停
-    window.addEventListener(
-      "mouseout",
-      (event) => event.stopPropagation(),
-      true
-    );
-    const frame_1 = document.querySelector(".course_main iframe");
-    const frame_2 = frame_1.contentWindow.document.querySelector("iframe");
-    // 单标题无视频页面直接跳转下一章
-    if (!frame_2) {
-      let btn = document.querySelector("#right0");
-      btn.click();
-      window.setTimeout(() => {
-        f();
-      }, 10000);
-    } else {
-      const btn = document.querySelector("#right1"); // 下一章按钮
-      if (!btn) return; // 不存在下一章即全部播放完成
-      const video = frame_2.contentWindow.document.querySelector("video");
-      if (!video) {
-        btn.click();
-        window.setTimeout(() => {
-        f();
-        }, 10000);
-        return;
-      }
-      video.muted = true; // 设置静音播放
-      video.playbackRate = 2; // 设置2倍播放速度
-      video.play();
-      window.setTimeout(() => {
-        video.muted = false;
-      }, 3000);
+	"use strict";
+	function sleep(time) {
+		return new Promise(resolve => {
+			const timeout = window.setTimeout(() => {
+				resolve();
+				clearTimeout(timeout);
+			}, time);
+		});
+	}
 
-      video.addEventListener("ended", () => {
-        btn.click();
-        window.setTimeout(() => {
-          f();
-        }, 10000);
-      });
-    }
-  }
-  // TODO:第一次需要手动运行避免报错
-  window.setTimeout(() => {
-    f();
-  }, 5000);
+	async function f() {
+		// 避免鼠标移出页面视频暂停
+		window.addEventListener("mouseout", event => event.stopPropagation(), true);
+		const frame_1 = document.querySelector(".course_main iframe");
+		const frame_2 = frame_1.contentWindow.document.querySelector("iframe");
+		// 单标题无视频页面直接跳转下一章
+		if (!frame_2) {
+			let btn = document.querySelector("#right0");
+			btn.click();
+			await sleep(10000);
+			f();
+		} else {
+			const btn = document.querySelector("#right1"); // 下一章按钮
+			if (!btn) return; // 不存在下一章即全部播放完成
+			const video = frame_2.contentWindow.document.querySelector("video");
+			if (!video) {
+				btn.click();
+				await sleep(3000);
+				const next = document.querySelector(".wconter .nextChapter");
+				next.click();
+				await sleep(10000);
+				f();
+			} else {
+				video.muted = true; // 设置静音播放
+				video.playbackRate = 2; // 设置2倍播放速度
+				video.play();
+				await sleep(3000);
+				video.muted = false;
+			}
+			video.addEventListener("ended", async () => {
+				btn.click();
+				await sleep(10000);
+				f();
+			});
+		}
+	}
+
+	sleep(5000).then(() => {
+		f();
+	});
 })();
