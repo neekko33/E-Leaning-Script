@@ -28,6 +28,9 @@
 		// 单标题无视频页面直接跳转下一章
 		if (!frame_2) {
 			let btn = document.querySelector("#right0");
+			if (!btn) {
+				btn = document.querySelector("#right1");
+			}
 			btn.click();
 			await sleep(10000);
 			f();
